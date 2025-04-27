@@ -141,13 +141,13 @@ fn app() -> Element {
                         let is_today = year == today_year && month == today_month && day == today_day;
                         let day_of_week = (first_day_weekday + (day - 1) as u32) % 7;
                         let style = if is_today {
-                            "padding: 10px; background-color: #ffeb3b; border-radius: 50%; font-weight: bold; border: 1px solid black;"
+                            "padding: 5px; background-color: #ffeb3b; font-weight: bold;"
                         } else if day_of_week == 0 {
-                            "padding: 10px; color: red; border: 1px solid black;"
+                            "padding: 5px; color: red;"
                         } else if day_of_week == 6 {
-                            "padding: 10px; color: blue; border: 1px solid black;"
+                            "padding: 5px; color: blue;"
                         } else {
-                            "padding: 10px; border: 1px solid black;"
+                            "padding: 5px;"
                         };
                         let (moon_phase_percentage, moon_phase_name) = calculate_moon_phase(
                             year,
@@ -167,7 +167,7 @@ fn app() -> Element {
                         };
                         rsx! {
                             div { style: "display: grid; grid-template-rows: repeat(4, 1fr); text-align: center; border: 1px solid black;",
-                                div { style: "padding: 5px;", "{day}" }
+                                div { style: "{style}", "{day}" }
                                 div { style: "padding: 5px;", "{moon_image}" }
                                 div { style: "padding: 5px;", "{moon_phase_name}" }
                                 div { style: "padding: 5px;", "{moon_phase_percentage:.2}%" }
