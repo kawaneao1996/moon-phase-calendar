@@ -107,6 +107,39 @@ fn app() -> Element {
                 }
             }
 
+            div { style: "margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 10px;",
+                input {
+                    r#type: "number",
+                    value: "{calendar_state().current_year}",
+                    oninput: move |e| {
+                        if let Ok(year) = e.value().parse::<i32>() {
+                            calendar_state.write().current_year = year;
+                        }
+                    },
+                    style: "width: 80px; text-align: center;",
+                }
+                span { "年" }
+                input {
+                    r#type: "number",
+                    value: "{calendar_state().current_month}",
+                    oninput: move |e| {
+                        if let Ok(month) = e.value().parse::<u32>() {
+                            if month >= 1 && month <= 12 {
+                                calendar_state.write().current_month = month;
+                            } else if month > 12 {
+                                calendar_state.write().current_month = 1;
+                                calendar_state.write().current_year += 1;
+                            } else if month < 1 {
+                                calendar_state.write().current_month = 12;
+                                calendar_state.write().current_year -= 1;
+                            }
+                        }
+                    },
+                    style: "width: 50px; text-align: center;",
+                }
+                span { "月" }
+            }
+
             button {
                 style: "margin-bottom: 20px;",
                 onclick: move |_| {
@@ -166,7 +199,7 @@ fn app() -> Element {
                             _ => "",
                         };
                         rsx! {
-                            div { style: "display: grid; grid-template-rows: repeat(4, 1fr); text-align: center; border: 1px solid black;",
+                            div { style: "display: grid; grid-template-rows: repeat(4, 1fr); text-align: center; border: 1px dashed black;",
                                 div { style: "{style}", "{day}" }
                                 div { style: "padding: 5px;", "{moon_image}" }
                                 div { style: "padding: 5px;", "{moon_phase_name}" }
