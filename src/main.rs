@@ -1,5 +1,7 @@
 use chrono::{Datelike, Local, NaiveDate};
 use dioxus::prelude::*;
+mod moon_phase;
+use moon_phase::calculate_moon_phase;
 
 fn main() {
     // dioxusのデスクトップランチャーを起動
@@ -147,8 +149,24 @@ fn app() -> Element {
                         } else {
                             "padding: 10px;"
                         };
+                        let (moon_phase_percentage, moon_phase_name) = calculate_moon_phase(
+                            year,
+                            month,
+                            day,
+                        );
+                        let moon_image = match moon_phase_name {
+                            "新月" => "🌑",
+                            "三日月" => "🌒",
+                            "上弦の月" => "🌓",
+                            "十三夜" => "🌔",
+                            "満月" => "🌕",
+                            "十六夜" => "🌖",
+                            "下弦の月" => "🌗",
+                            "二十六夜" => "🌘",
+                            _ => "",
+                        };
                         rsx! {
-                            div { style, "{day}" }
+                            div { style, "{day} {moon_image} ({moon_phase_name})" }
                         }
                     }
                 }
