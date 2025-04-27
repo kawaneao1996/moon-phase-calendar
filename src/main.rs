@@ -174,7 +174,7 @@ fn app() -> Element {
                         let is_today = year == today_year && month == today_month && day == today_day;
                         let day_of_week = (first_day_weekday + (day - 1) as u32) % 7;
                         let style = if is_today {
-                            "padding: 5px; background-color: #ffeb3b; font-weight: bold;"
+                            "padding: 5px; background-color: lime; font-weight: bold;"
                         } else if day_of_week == 0 {
                             "padding: 5px; color: red;"
                         } else if day_of_week == 6 {
