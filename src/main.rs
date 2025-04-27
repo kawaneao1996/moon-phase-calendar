@@ -4,13 +4,14 @@ use dioxus::prelude::*;
 fn main() {
     // dioxusのデスクトップランチャーを起動
     // dioxus_desktop::launch(App);
-    dioxus::launch(App);
+    dioxus::launch(app);
 }
 
 #[derive(Debug, Clone)]
 struct CalendarState {
     current_year: i32,
     current_month: u32,
+    is_dark_mode: bool, // ダークモードの状態を追加
 }
 
 impl Default for CalendarState {
@@ -19,11 +20,12 @@ impl Default for CalendarState {
         Self {
             current_year: today.year(),
             current_month: today.month(),
+            is_dark_mode: false, // デフォルトはライトモード
         }
     }
 }
 
-fn App() -> Element {
+fn app() -> Element {
     let mut calendar_state = use_signal(|| CalendarState::default());
 
     let today = Local::now();
@@ -33,6 +35,7 @@ fn App() -> Element {
 
     let year = calendar_state().current_year;
     let month = calendar_state().current_month;
+    let is_dark_mode = calendar_state().is_dark_mode;
 
     let month_name = match month {
         1 => "1月",
@@ -67,12 +70,13 @@ fn App() -> Element {
     // 月曜日を0、日曜日を6とする（chrono::Weekdayは月曜が0、日曜が6）
     let first_day_weekday = first_day_of_month.weekday().num_days_from_monday();
 
-    rsx! {
-        div {
-            style: "font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;",
+    let background_color = if is_dark_mode { "#333" } else { "#fff" };
+    let text_color = if is_dark_mode { "#fff" } else { "#000" };
 
-            div {
-                style: "display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;",
+    rsx! {
+        div { style: "font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: {background_color}; color: {text_color};",
+
+            div { style: "display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;",
 
                 button {
                     onclick: move |_| {
@@ -86,10 +90,7 @@ fn App() -> Element {
                     "前月"
                 }
 
-                h1 {
-                    style: "text-align: center; margin: 0;",
-                    "{year}年{month_name}"
-                }
+                h1 { style: "text-align: center; margin: 0;", "{year}年{month_name}" }
 
                 button {
                     onclick: move |_| {
@@ -104,8 +105,19 @@ fn App() -> Element {
                 }
             }
 
-            div {
-                style: "display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;",
+            button {
+                style: "margin-bottom: 20px;",
+                onclick: move |_| {
+                    calendar_state.write().is_dark_mode = !calendar_state().is_dark_mode;
+                },
+                if is_dark_mode {
+                    "ライトモード"
+                } else {
+                    "ダークモード"
+                }
+            }
+
+            div { style: "display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;",
 
                 // 曜日の表示
                 div { style: "padding: 10px; font-weight: bold; color: red;", "日" }
@@ -126,22 +138,17 @@ fn App() -> Element {
                     {
                         let is_today = year == today_year && month == today_month && day == today_day;
                         let day_of_week = (first_day_weekday + (day - 1) as u32) % 7;
-
                         let style = if is_today {
                             "padding: 10px; background-color: #ffeb3b; border-radius: 50%; font-weight: bold;"
-                        } else if day_of_week == 0 { // 日曜
+                        } else if day_of_week == 0 {
                             "padding: 10px; color: red;"
-                        } else if day_of_week == 6 { // 土曜
+                        } else if day_of_week == 6 {
                             "padding: 10px; color: blue;"
                         } else {
                             "padding: 10px;"
                         };
-
-                        rsx!{
-                            div {
-                                style: style,
-                                "{day}"
-                            }
+                        rsx! {
+                            div { style, "{day}" }
                         }
                     }
                 }
