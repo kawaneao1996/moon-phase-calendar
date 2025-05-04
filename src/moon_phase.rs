@@ -12,7 +12,7 @@ pub fn calculate_moon_phase(year: i32, month: u32, day: u32) -> (f64, &'static s
     let phase = ((timestamp - new_moon) % lp) as f64 / lp as f64;
     let phase = if phase < 0.0 { phase + 1.0 } else { phase };
 
-    let phase_name = match (phase * 8.0).round() as u8 {
+    let phase_name = match (phase * 8.0).round() as u8 % 8 { // 8を超える場合を0に戻す
         0 => "新月",
         1 => "三日月",
         2 => "上弦の月",
